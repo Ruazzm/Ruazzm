@@ -20,6 +20,18 @@ scripts/update_frontier_radar.py
 
 After the files are pushed, go to the repository's **Actions** tab and run **Update Frontier Radar** once. The workflow will also run every Monday and Thursday.
 
+## Profile design
+
+The first screen should read like a technical notebook, not a landing page. Keep it calm:
+
+- one clear positioning sentence,
+- one compact work map,
+- one operating style section,
+- one repository map,
+- and a collapsible reading queue.
+
+The reading queue is useful, but it should not dominate the profile. The main page should communicate judgment before automation.
+
 ## How to make it look technically deep
 
 Pin repositories that expose real technical work:
@@ -38,6 +50,14 @@ Avoid profile clutter that ages badly:
 - "I know Python/React/SQL" technology piles,
 - vague AI slogans,
 - and old-era claims like prompt engineering as the center of the page.
+
+Use language that can survive model-release cycles:
+
+- say "reasoning-time compute" instead of hyping a single model;
+- say "retrieval reliability" instead of only "RAG";
+- say "traceable agent systems" instead of "AI agents";
+- say "serving cost model" instead of only "deployment";
+- say "failure analysis" instead of "benchmarks" when the artifact includes real cases.
 
 ## Recommended first repo backlog
 
@@ -67,4 +87,3 @@ Avoid profile clutter that ages badly:
 - MCP-style tool ecosystems,
 - retrieval as an attribution system,
 - and inference-time scaling rather than only pretraining scale.
-

@@ -23,25 +23,34 @@ ATOM_NS = {"atom": "http://www.w3.org/2005/Atom"}
 TOPICS = [
     (
         "Reasoning / RLVR",
-        'cat:cs.CL AND (all:"reasoning" OR all:"verifiable reward" OR all:"test-time compute" OR all:"reinforcement learning")',
+        'cat:cs.CL AND (all:"language model" OR all:"LLM") AND (all:"reasoning" OR all:"verifiable reward" OR all:"test-time compute" OR all:"reinforcement learning")',
     ),
     (
         "Agents / tool use",
-        'cat:cs.CL AND (all:"agent" OR all:"tool use" OR all:"computer use" OR all:"MCP")',
+        'cat:cs.CL AND (all:"language model" OR all:"LLM") AND (all:"agent" OR all:"tool use" OR all:"computer use")',
     ),
     (
         "RAG / memory",
-        'cat:cs.CL AND (all:"retrieval augmented generation" OR all:"GraphRAG" OR all:"memory")',
+        'cat:cs.CL AND (all:"retrieval augmented generation" OR all:"GraphRAG" OR all:"memory" OR all:"RAG")',
     ),
     (
         "Inference / serving",
-        'cat:cs.CL AND (all:"speculative decoding" OR all:"KV cache" OR all:"long context" OR all:"efficient inference")',
+        'cat:cs.CL AND (all:"language model" OR all:"LLM") AND (all:"speculative decoding" OR all:"KV cache" OR all:"long context" OR all:"efficient inference")',
     ),
     (
         "Multimodal models",
-        'cat:cs.CL AND (all:"multimodal" OR all:"video understanding" OR all:"vision language model")',
+        'cat:cs.CL AND (all:"multimodal" OR all:"video understanding" OR all:"vision language model" OR all:"MLLM")',
     ),
 ]
+
+
+TITLE_FILTERS = {
+    "Reasoning / RLVR": ("llm", "language model", "reasoning", "test-time", "verifiable", "chain-of-thought"),
+    "Agents / tool use": ("llm", "language model", "agent", "tool", "computer use"),
+    "RAG / memory": ("retrieval", "rag", "memory", "graphrag", "grounding"),
+    "Inference / serving": ("llm", "language model", "decoding", "kv cache", "long-context", "inference", "serving"),
+    "Multimodal models": ("multimodal", "vision-language", "vision language", "mllm", "video"),
+}
 
 
 FALLBACK_SIGNALS = {
@@ -76,7 +85,7 @@ def normalize(value: str) -> str:
     return value
 
 
-def fetch_arxiv(query: str, max_results: int = 3) -> list[dict[str, str]]:
+def fetch_arxiv(query: str, max_results: int = 8) -> list[dict[str, str]]:
     params = urllib.parse.urlencode(
         {
             "search_query": query,
@@ -92,14 +101,19 @@ def fetch_arxiv(query: str, max_results: int = 3) -> list[dict[str, str]]:
         headers={"User-Agent": "github-profile-frontier-radar/1.0"},
     )
     last_error: Exception | None = None
-    for attempt in range(3):
+    for attempt in range(2):
         try:
-            with urllib.request.urlopen(request, timeout=45) as response:
+            with urllib.request.urlopen(request, timeout=18) as response:
                 root = ET.fromstring(response.read())
             break
-        except (TimeoutError, urllib.error.URLError, urllib.error.HTTPError) as exc:
+        except urllib.error.HTTPError as exc:
+            if exc.code == 429:
+                raise RuntimeError("arXiv rate limited the request")
             last_error = exc
-            time.sleep(5 * (attempt + 1))
+            time.sleep(2 * (attempt + 1))
+        except (TimeoutError, urllib.error.URLError) as exc:
+            last_error = exc
+            time.sleep(2 * (attempt + 1))
     else:
         raise RuntimeError(f"arXiv request failed after retries: {last_error}")
 
@@ -120,12 +134,24 @@ def fetch_arxiv(query: str, max_results: int = 3) -> list[dict[str, str]]:
     return papers
 
 
+def filter_papers(label: str, papers: list[dict[str, str]], limit: int = 3) -> list[dict[str, str]]:
+    needles = TITLE_FILTERS[label]
+    kept: list[dict[str, str]] = []
+    for paper in papers:
+        title = paper["title"].lower()
+        if any(needle in title for needle in needles):
+            kept.append(paper)
+        if len(kept) == limit:
+            break
+    return kept
+
+
 def render_radar() -> str:
     today = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d")
     lines = [
-        f"_Auto-updated on {today} UTC from arXiv recent submissions._",
+        f"_Updated on {today} UTC. Recent arXiv signals are filtered for LLM relevance; reference anchors fill gaps when a topic is rate-limited._",
         "",
-        "| Track | Fresh signals |",
+        "| Track | Signals |",
         "| --- | --- |",
     ]
 
@@ -135,7 +161,9 @@ def render_radar() -> str:
         except Exception as exc:
             print(f"warning: failed to fetch {label}: {exc}", file=sys.stderr)
             papers = []
-        time.sleep(3.2)
+        time.sleep(1.2)
+
+        papers = filter_papers(label, papers)
 
         if papers:
             items = [
@@ -147,7 +175,7 @@ def render_radar() -> str:
             fallback_items = [
                 f"[{title}]({url})" for title, url in FALLBACK_SIGNALS.get(label, [])
             ]
-            signals = "Curated fallback: " + "<br>".join(fallback_items)
+            signals = "<br>".join(fallback_items)
         lines.append(f"| {label} | {signals} |")
 
     return "\n".join(lines)

@@ -1,70 +1,52 @@
 # Ruazzm
 
-LLM algorithms and systems: reasoning, post-training, agentic retrieval, and efficient inference.
+I work on LLM algorithms and systems, especially the parts where model behavior meets infrastructure: post-training, reasoning-time compute, retrieval, agent traces, and serving efficiency.
 
-I build small but inspectable systems around frontier model behavior: how models reason, how they use tools, how retrieval changes answers, and how serving constraints shape real applications.
+I prefer small, inspectable projects over broad demos. Good artifacts should leave enough evidence to debug later: configs, traces, metrics, failure cases, and notes about what did not work.
 
-## Current Focus
+## Current Work
 
-| Track | What I am looking for | What I build |
-| --- | --- | --- |
-| Reasoning and post-training | RL with verifiable rewards, long-CoT distillation, process supervision, test-time compute | reasoning eval harnesses, reward hacking audits, ablation reports |
-| Agentic systems | tool-use planning, MCP-style tool interfaces, long-running coding agents, memory files | task agents with traceable state and failure analysis |
-| Retrieval and memory | GraphRAG, query planning, reranking, contextual retrieval, long-context routing | grounded QA pipelines with hallucination and attribution metrics |
-| Inference systems | speculative decoding, KV-cache compression, prompt caching, continuous batching, MoE routing | low-latency serving experiments and cost/quality dashboards |
-| Multimodal foundation models | native multimodality, video understanding, UI/computer-use agents | multimodal data curation and evaluation probes |
+- **Reasoning and post-training:** inference-time compute, verifier signals, preference optimization, RLVR, and reward hacking.
+- **Agents and tools:** planning loops, tool-call traces, recovery policies, MCP-style interfaces, and state visibility.
+- **Retrieval and memory:** query routing, graph memory, reranking, attribution quality, and stale-context detection.
+- **Inference systems:** long-context cost, KV cache policy, prompt caching, speculative decoding, batching, and MoE routing.
+- **Multimodal models:** UI/video understanding, mixed-context failures, data curation, and evaluation probes.
 
-## Research Operating Loop
+## Operating Style
 
-```mermaid
-flowchart LR
-    A[Paper or release signal] --> B[Reproduce the core claim]
-    B --> C[Stress test on edge cases]
-    C --> D[Measure quality, latency, and failure modes]
-    D --> E[Write the implementation note]
-    E --> F[Ship a minimal repo]
-    F --> A
-```
+- Reproduce the smallest meaningful claim before scaling it.
+- Treat failure cases as first-class data, not appendix material.
+- Measure latency, memory, and cost beside quality.
+- Keep prompts, configs, seeds, traces, and eval slices visible.
+- Prefer boring, repeatable experiments to polished one-off demos.
 
-## Frontier Radar
+## Repository Map
+
+| Repo idea | What it should prove |
+| --- | --- |
+| `reasoning-eval-lab` | Compare direct answering, thinking budgets, self-consistency, verifier reranking, and tool-assisted solving. |
+| `agent-trace-bench` | Store agent state, tool calls, retries, and recovery patterns in a format that can be inspected after the run. |
+| `rag-failure-atlas` | Taxonomize stale retrieval, citation drift, entity collision, missing context, and multi-hop failure modes. |
+| `kv-cache-playground` | Benchmark long-context latency and memory under prompt caching, cache quantization, and compression policies. |
+| `posttraining-field-notes` | Keep short implementation notes on SFT, preference optimization, RLVR, rejection sampling, and reward hacking. |
+
+<details>
+<summary><strong>Reading queue</strong> - recent signals I use to keep the map from going stale</summary>
 
 <!-- FRONTIER-RADAR:START -->
-_Auto-updated on 2026-06-01 UTC from arXiv recent submissions._
+_Updated on 2026-06-01 UTC. Recent arXiv signals are filtered for LLM relevance; reference anchors fill gaps when a topic is rate-limited._
 
-| Track | Fresh signals |
+| Track | Signals |
 | --- | --- |
-| Reasoning / RLVR | [LongTraceRL: Learning Long-Context Reasoning from Search Agent Trajectories with Rubric Rewards](http://arxiv.org/abs/2605.31584v1) (2026-05-29)<br>[Disagreeing Rationales: Rethinking Classification and Explainability Evaluation in Hate Speech Detection](http://arxiv.org/abs/2605.31563v1) (2026-05-29)<br>[What Am I Missing? Question-Answering as Hidden State Probing](http://arxiv.org/abs/2605.31561v1) (2026-05-29) |
-| Agents / tool use | Curated fallback: [Anthropic Claude 4: extended thinking and tool use](https://www.anthropic.com/news/claude-4)<br>[Model Context Protocol](https://www.anthropic.com/news/model-context-protocol) |
-| RAG / memory | Curated fallback: [Microsoft GraphRAG](https://www.microsoft.com/en-us/research/project/graphrag/)<br>[Contextual retrieval](https://www.anthropic.com/news/contextual-retrieval) |
-| Inference / serving | [LongTraceRL: Learning Long-Context Reasoning from Search Agent Trajectories with Rubric Rewards](http://arxiv.org/abs/2605.31584v1) (2026-05-29)<br>[Mellum2 Technical Report](http://arxiv.org/abs/2605.31268v1) (2026-05-29)<br>[GRKV: Global Regression for Training-Free KV Cache Compression in Long-Context LLMs](http://arxiv.org/abs/2605.31105v1) (2026-05-29) |
-| Multimodal models | Curated fallback: [Qwen3: hybrid thinking modes](https://qwenlm.github.io/blog/qwen3/)<br>[Llama 4: native multimodal MoE models](https://ai.meta.com/blog/llama-4-multimodal-intelligence/)<br>[Gemini 3.1 Pro model card](https://deepmind.google/models/model-cards/gemini-3-1-pro) |
+| Reasoning / RLVR | [DeepSeek-R1: reasoning via reinforcement learning](https://arxiv.org/abs/2501.12948)<br>[s1: simple test-time scaling](https://arxiv.org/abs/2501.19393)<br>[Qwen3: hybrid thinking modes](https://qwenlm.github.io/blog/qwen3/) |
+| Agents / tool use | [Anthropic Claude 4: extended thinking and tool use](https://www.anthropic.com/news/claude-4)<br>[Model Context Protocol](https://www.anthropic.com/news/model-context-protocol) |
+| RAG / memory | [Microsoft GraphRAG](https://www.microsoft.com/en-us/research/project/graphrag/)<br>[Contextual retrieval](https://www.anthropic.com/news/contextual-retrieval) |
+| Inference / serving | [Speculative decoding](https://arxiv.org/abs/2211.17192)<br>[vLLM paged attention](https://arxiv.org/abs/2309.06180) |
+| Multimodal models | [Qwen3: hybrid thinking modes](https://qwenlm.github.io/blog/qwen3/)<br>[Llama 4: native multimodal MoE models](https://ai.meta.com/blog/llama-4-multimodal-intelligence/)<br>[Gemini 3.1 Pro model card](https://deepmind.google/models/model-cards/gemini-3-1-pro) |
 <!-- FRONTIER-RADAR:END -->
 
-## Work I Want My GitHub To Signal
+</details>
 
-- I care about implementation details, not just model names.
-- I prefer benchmarks with inspectable failure cases over leaderboard-only claims.
-- I treat RAG as a retrieval and attribution system, not a prompt template.
-- I track the cost side of intelligence: context length, cache behavior, batching, and token budgets.
-- I write down negative results because they are often the most useful part of the experiment.
+## Reading Filter
 
-## Public Artifacts To Pin
-
-| Repo idea | Why it looks technically deep |
-| --- | --- |
-| `reasoning-eval-lab` | Compare thinking/non-thinking modes, majority voting, self-consistency, and verifier reranking on math/code tasks. |
-| `agent-trace-bench` | Run tool-use agents with full traces, recovery statistics, and error taxonomy. |
-| `rag-failure-atlas` | Collect hallucination, citation drift, entity confusion, and stale-context failures. |
-| `kv-cache-playground` | Measure long-context latency and memory under cache quantization/compression settings. |
-| `llm-posttraining-notes` | Keep concise notes on SFT, DPO/IPO/ORPO, RLVR, rejection sampling, and reward hacking. |
-
-## Reading Filters
-
-I keep a paper or release note only if it changes at least one of these:
-
-- the training recipe,
-- the inference-time algorithm,
-- the agent/tool interface,
-- the evaluation method,
-- the deployment cost model,
-- or the failure analysis.
+I keep a paper, model release, or engineering note only if it changes at least one implementation choice: the training recipe, inference-time algorithm, tool interface, evaluation method, serving cost model, or failure analysis.
