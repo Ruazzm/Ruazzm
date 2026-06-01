@@ -18,6 +18,11 @@ README = ROOT / "README.md"
 START = "<!-- FRONTIER-RADAR:START -->"
 END = "<!-- FRONTIER-RADAR:END -->"
 ATOM_NS = {"atom": "http://www.w3.org/2005/Atom"}
+ARXIV_DELAY_SECONDS = 3.2
+HTTP_TIMEOUT_SECONDS = 35
+MAX_RESULTS_PER_TRACK = 6
+MAX_PAPERS_PER_TRACK = 2
+MAX_RETRIES = 2
 
 
 TRACKS = [
@@ -202,7 +207,16 @@ def md(value: str) -> str:
     return normalize(value).replace("|", r"\|")
 
 
-def fetch_arxiv(query: str, max_results: int = 6) -> list[dict[str, str]]:
+def retry_delay(exc: urllib.error.HTTPError, attempt: int) -> float:
+    retry_after = exc.headers.get("Retry-After")
+    if retry_after and retry_after.isdigit():
+        return float(retry_after)
+    if exc.code == 429:
+        return 15.0 * (attempt + 1)
+    return 3.0 * (attempt + 1)
+
+
+def fetch_arxiv(query: str, max_results: int = MAX_RESULTS_PER_TRACK) -> list[dict[str, str]]:
     params = urllib.parse.urlencode(
         {
             "search_query": query,
@@ -218,20 +232,19 @@ def fetch_arxiv(query: str, max_results: int = 6) -> list[dict[str, str]]:
         headers={"User-Agent": "github-profile-frontier-radar/2.0"},
     )
     last_error: Exception | None = None
-    for attempt in range(2):
+    for attempt in range(MAX_RETRIES):
         try:
-            with urllib.request.urlopen(request, timeout=35) as response:
+            with urllib.request.urlopen(request, timeout=HTTP_TIMEOUT_SECONDS) as response:
                 root = ET.fromstring(response.read())
             break
         except urllib.error.HTTPError as exc:
             last_error = exc
-            if exc.code == 429:
-                time.sleep(15 * (attempt + 1))
-            else:
-                time.sleep(3 * (attempt + 1))
+            if attempt + 1 < MAX_RETRIES:
+                time.sleep(retry_delay(exc, attempt))
         except (TimeoutError, urllib.error.URLError) as exc:
             last_error = exc
-            time.sleep(3 * (attempt + 1))
+            if attempt + 1 < MAX_RETRIES:
+                time.sleep(3 * (attempt + 1))
     else:
         raise RuntimeError(f"arXiv request failed after retries: {last_error}")
 
@@ -254,7 +267,11 @@ def fetch_arxiv(query: str, max_results: int = 6) -> list[dict[str, str]]:
     return papers
 
 
-def filter_papers(track: dict[str, object], papers: list[dict[str, str]], limit: int = 2) -> list[dict[str, str]]:
+def filter_papers(
+    track: dict[str, object],
+    papers: list[dict[str, str]],
+    limit: int = MAX_PAPERS_PER_TRACK,
+) -> list[dict[str, str]]:
     needles = tuple(str(needle).lower() for needle in track["needles"])
     kept: list[dict[str, str]] = []
     for paper in papers:
@@ -289,7 +306,7 @@ def render_radar() -> str:
         "| --- | --- | --- |",
     ]
 
-    for track in TRACKS:
+    for index, track in enumerate(TRACKS):
         label = str(track["label"])
         query = str(track["query"])
         try:
@@ -297,7 +314,8 @@ def render_radar() -> str:
         except Exception as exc:
             print(f"warning: failed to fetch {label}: {exc}", file=sys.stderr)
             papers = []
-        time.sleep(3.2)
+        if index + 1 < len(TRACKS):
+            time.sleep(ARXIV_DELAY_SECONDS)
 
         papers = filter_papers(track, papers)
         recent = format_papers(track, papers)

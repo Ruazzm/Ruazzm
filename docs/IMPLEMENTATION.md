@@ -16,21 +16,25 @@ GitHub renders `README.md` from `Ruazzm/Ruazzm` at the top of the `github.com/Ru
 README.md
 scripts/update_frontier_radar.py
 .github/workflows/update-frontier-radar.yml
+docs/FRONTIER_SOURCES.md
+docs/TECHNICAL_READING_MAP.md
+docs/PROFILE_REVIEW.md
 ```
 
-After the files are pushed, go to the repository's **Actions** tab and run **Update Frontier Radar** once. The workflow will also run every Monday and Thursday.
+After the files are pushed, go to the repository's **Actions** tab and run **Update Frontier Radar** once if you want an immediate refresh. The workflow also runs on weekdays.
 
 ## Profile design
 
 The first screen should read like a technical notebook, not a landing page. Keep it calm:
 
 - one clear positioning sentence,
-- one compact work map,
+- one compact public-work signal,
+- one compact workbench map,
 - one operating style section,
-- one repository map,
-- and a collapsible reading queue.
+- one research shelf,
+- and collapsible sections for planned artifacts and the frontier radar.
 
-The reading queue is useful, but it should not dominate the profile. The main page should communicate judgment before automation.
+The reading queue is useful, but it should not dominate the profile. The main page should communicate judgment, current work, and public evidence before automation.
 
 ## How to make it look technically deep
 
@@ -50,6 +54,14 @@ Avoid profile clutter that ages badly:
 - "I know Python/React/SQL" technology piles,
 - vague AI slogans,
 - and old-era claims like prompt engineering as the center of the page.
+
+Prefer current evidence:
+
+- upstream pull requests,
+- small regression tests,
+- maintained docs,
+- repeatable update scripts,
+- and links to technical notes that explain why a reference matters.
 
 Use language that can survive model-release cycles:
 
