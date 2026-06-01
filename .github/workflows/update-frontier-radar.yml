@@ -2,7 +2,7 @@ name: Update Frontier Radar
 
 on:
   schedule:
-    - cron: "17 1 * * 1,4"
+    - cron: "17 1 * * 1-5"
   workflow_dispatch:
 
 permissions:
@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Update README radar
+      - name: Update README frontier radar
         run: python scripts/update_frontier_radar.py
 
       - name: Commit changes
@@ -35,4 +35,3 @@ jobs:
           git add README.md
           git commit -m "Update frontier radar"
           git push
-

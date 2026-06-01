@@ -20,63 +20,176 @@ END = "<!-- FRONTIER-RADAR:END -->"
 ATOM_NS = {"atom": "http://www.w3.org/2005/Atom"}
 
 
-TOPICS = [
-    (
-        "Reasoning / RLVR",
-        'cat:cs.CL AND (all:"language model" OR all:"LLM") AND (all:"reasoning" OR all:"verifiable reward" OR all:"test-time compute" OR all:"reinforcement learning")',
-    ),
-    (
-        "Agents / tool use",
-        'cat:cs.CL AND (all:"language model" OR all:"LLM") AND (all:"agent" OR all:"tool use" OR all:"computer use")',
-    ),
-    (
-        "RAG / memory",
-        'cat:cs.CL AND (all:"retrieval augmented generation" OR all:"GraphRAG" OR all:"memory" OR all:"RAG")',
-    ),
-    (
-        "Inference / serving",
-        'cat:cs.CL AND (all:"language model" OR all:"LLM") AND (all:"speculative decoding" OR all:"KV cache" OR all:"long context" OR all:"efficient inference")',
-    ),
-    (
-        "Multimodal models",
-        'cat:cs.CL AND (all:"multimodal" OR all:"video understanding" OR all:"vision language model" OR all:"MLLM")',
-    ),
+TRACKS = [
+    {
+        "label": "Post-training / alignment",
+        "query": 'cat:cs.CL AND (all:"large language model" OR all:"LLM") AND (all:"post-training" OR all:"alignment" OR all:"preference optimization" OR all:"RLHF" OR all:"DPO" OR all:"GRPO" OR all:"reward model")',
+        "needles": (
+            "alignment",
+            "preference",
+            "rlhf",
+            "dpo",
+            "grpo",
+            "reward model",
+            "post-training",
+            "post training",
+        ),
+        "fallback_papers": [
+            ("Training language models to follow instructions with human feedback", "https://arxiv.org/abs/2203.02155"),
+            ("Direct Preference Optimization", "https://arxiv.org/abs/2305.18290"),
+            ("DeepSeek-R1: reasoning via reinforcement learning", "https://arxiv.org/abs/2501.12948"),
+        ],
+        "anchors": [
+            ("TRL docs", "https://huggingface.co/docs/trl"),
+            ("PEFT docs", "https://huggingface.co/docs/peft"),
+            ("LLaMA Factory", "https://github.com/hiyouga/LLaMA-Factory"),
+        ],
+    },
+    {
+        "label": "Reasoning / evaluation",
+        "query": 'cat:cs.CL AND (all:"large language model" OR all:"LLM") AND (all:"reasoning" OR all:"test-time compute" OR all:"verifier" OR all:"evaluation" OR all:"benchmark")',
+        "needles": (
+            "reasoning",
+            "test-time",
+            "test time",
+            "verifier",
+            "benchmark",
+            "evaluation",
+            "chain-of-thought",
+        ),
+        "fallback_papers": [
+            ("Self-Consistency Improves Chain of Thought Reasoning", "https://arxiv.org/abs/2203.11171"),
+            ("s1: simple test-time scaling", "https://arxiv.org/abs/2501.19393"),
+            ("SWE-bench", "https://arxiv.org/abs/2310.06770"),
+        ],
+        "anchors": [
+            ("lm-evaluation-harness", "https://github.com/EleutherAI/lm-evaluation-harness"),
+            ("Inspect", "https://inspect.aisi.org.uk/"),
+            ("OpenAI Evals", "https://github.com/openai/evals"),
+        ],
+    },
+    {
+        "label": "Agents / tool use",
+        "query": 'cat:cs.CL AND (all:"large language model" OR all:"LLM") AND (all:"agent" OR all:"tool use" OR all:"tool-use" OR all:"computer use" OR all:"workflow")',
+        "needles": (
+            "agent",
+            "tool",
+            "computer use",
+            "workflow",
+            "planning",
+            "environment",
+            "web",
+        ),
+        "fallback_papers": [
+            ("ReAct: Synergizing Reasoning and Acting", "https://arxiv.org/abs/2210.03629"),
+            ("Toolformer", "https://arxiv.org/abs/2302.04761"),
+            ("SWE-agent", "https://arxiv.org/abs/2405.15793"),
+        ],
+        "anchors": [
+            ("MCP docs", "https://modelcontextprotocol.io/docs/getting-started/intro"),
+            ("LangGraph docs", "https://docs.langchain.com/oss/python/langgraph/overview"),
+            ("AutoGen docs", "https://microsoft.github.io/autogen/"),
+        ],
+    },
+    {
+        "label": "RAG / memory",
+        "query": 'cat:cs.CL AND (all:"retrieval augmented generation" OR all:"RAG" OR all:"GraphRAG" OR all:"reranking" OR all:"grounding" OR all:"long context")',
+        "needles": (
+            "retrieval",
+            "rag",
+            "graphrag",
+            "rerank",
+            "grounding",
+            "citation",
+            "memory",
+            "long-context",
+        ),
+        "fallback_papers": [
+            ("Retrieval-Augmented Generation", "https://arxiv.org/abs/2005.11401"),
+            ("Self-RAG", "https://arxiv.org/abs/2310.11511"),
+            ("RAGAS", "https://arxiv.org/abs/2309.15217"),
+        ],
+        "anchors": [
+            ("LlamaIndex docs", "https://docs.llamaindex.ai/"),
+            ("Haystack evaluation", "https://docs.haystack.deepset.ai/docs/evaluation"),
+            ("Ragas docs", "https://docs.ragas.io/"),
+            ("GraphRAG", "https://www.microsoft.com/en-us/research/project/graphrag/"),
+        ],
+    },
+    {
+        "label": "Inference / serving",
+        "query": '(all:"large language model" OR all:"LLM") AND (all:"inference" OR all:"serving" OR all:"KV cache" OR all:"speculative decoding" OR all:"continuous batching" OR all:"prefix caching")',
+        "needles": (
+            "inference",
+            "serving",
+            "kv cache",
+            "speculative",
+            "batching",
+            "prefix caching",
+            "pagedattention",
+            "latency",
+            "throughput",
+        ),
+        "fallback_papers": [
+            ("PagedAttention / vLLM", "https://arxiv.org/abs/2309.06180"),
+            ("Speculative Decoding", "https://arxiv.org/abs/2211.17192"),
+            ("FlashAttention", "https://arxiv.org/abs/2205.14135"),
+        ],
+        "anchors": [
+            ("vLLM docs", "https://docs.vllm.ai/"),
+            ("SGLang docs", "https://docs.sglang.io/"),
+            ("TensorRT-LLM docs", "https://nvidia.github.io/TensorRT-LLM/"),
+            ("llama.cpp", "https://github.com/ggml-org/llama.cpp"),
+        ],
+    },
+    {
+        "label": "Multimodal / documents",
+        "query": 'cat:cs.CL AND (all:"multimodal" OR all:"vision language model" OR all:"VLM" OR all:"document understanding" OR all:"video understanding" OR all:"UI")',
+        "needles": (
+            "multimodal",
+            "vision-language",
+            "vision language",
+            "vlm",
+            "document",
+            "video",
+            "ui",
+            "chart",
+        ),
+        "fallback_papers": [
+            ("LLaVA", "https://arxiv.org/abs/2304.08485"),
+            ("MMMU", "https://arxiv.org/abs/2311.16502"),
+            ("DocVQA", "https://arxiv.org/abs/2007.00398"),
+        ],
+        "anchors": [
+            ("lmms-eval", "https://github.com/EvolvingLMMs-Lab/lmms-eval"),
+            ("VLMEvalKit", "https://github.com/open-compass/VLMEvalKit"),
+            ("LlamaIndex document parsing", "https://docs.cloud.llamaindex.ai/"),
+        ],
+    },
+    {
+        "label": "Data / distillation",
+        "query": 'cat:cs.CL AND (all:"large language model" OR all:"LLM") AND (all:"synthetic data" OR all:"data curation" OR all:"distillation" OR all:"instruction tuning" OR all:"dataset")',
+        "needles": (
+            "synthetic data",
+            "data curation",
+            "distillation",
+            "instruction",
+            "dataset",
+            "preference data",
+            "data quality",
+        ),
+        "fallback_papers": [
+            ("Self-Instruct", "https://arxiv.org/abs/2212.10560"),
+            ("Alpaca", "https://crfm.stanford.edu/2023/03/13/alpaca.html"),
+            ("Magpie", "https://arxiv.org/abs/2406.08464"),
+        ],
+        "anchors": [
+            ("Hugging Face Datasets", "https://huggingface.co/docs/datasets"),
+            ("Argilla docs", "https://docs.argilla.io/"),
+            ("Datatrove", "https://github.com/huggingface/datatrove"),
+        ],
+    },
 ]
-
-
-TITLE_FILTERS = {
-    "Reasoning / RLVR": ("llm", "language model", "reasoning", "test-time", "verifiable", "chain-of-thought"),
-    "Agents / tool use": ("llm", "language model", "agent", "tool", "computer use"),
-    "RAG / memory": ("retrieval", "rag", "memory", "graphrag", "grounding"),
-    "Inference / serving": ("llm", "language model", "decoding", "kv cache", "long-context", "inference", "serving"),
-    "Multimodal models": ("multimodal", "vision-language", "vision language", "mllm", "video"),
-}
-
-
-FALLBACK_SIGNALS = {
-    "Reasoning / RLVR": [
-        ("DeepSeek-R1: reasoning via reinforcement learning", "https://arxiv.org/abs/2501.12948"),
-        ("s1: simple test-time scaling", "https://arxiv.org/abs/2501.19393"),
-        ("Qwen3: hybrid thinking modes", "https://qwenlm.github.io/blog/qwen3/"),
-    ],
-    "Agents / tool use": [
-        ("Anthropic Claude 4: extended thinking and tool use", "https://www.anthropic.com/news/claude-4"),
-        ("Model Context Protocol", "https://www.anthropic.com/news/model-context-protocol"),
-    ],
-    "RAG / memory": [
-        ("Microsoft GraphRAG", "https://www.microsoft.com/en-us/research/project/graphrag/"),
-        ("Contextual retrieval", "https://www.anthropic.com/news/contextual-retrieval"),
-    ],
-    "Inference / serving": [
-        ("Speculative decoding", "https://arxiv.org/abs/2211.17192"),
-        ("vLLM paged attention", "https://arxiv.org/abs/2309.06180"),
-    ],
-    "Multimodal models": [
-        ("Qwen3: hybrid thinking modes", "https://qwenlm.github.io/blog/qwen3/"),
-        ("Llama 4: native multimodal MoE models", "https://ai.meta.com/blog/llama-4-multimodal-intelligence/"),
-        ("Gemini 3.1 Pro model card", "https://deepmind.google/models/model-cards/gemini-3-1-pro"),
-    ],
-}
 
 
 def normalize(value: str) -> str:
@@ -85,7 +198,11 @@ def normalize(value: str) -> str:
     return value
 
 
-def fetch_arxiv(query: str, max_results: int = 8) -> list[dict[str, str]]:
+def md(value: str) -> str:
+    return normalize(value).replace("|", r"\|")
+
+
+def fetch_arxiv(query: str, max_results: int = 6) -> list[dict[str, str]]:
     params = urllib.parse.urlencode(
         {
             "search_query": query,
@@ -98,22 +215,23 @@ def fetch_arxiv(query: str, max_results: int = 8) -> list[dict[str, str]]:
     url = f"https://export.arxiv.org/api/query?{params}"
     request = urllib.request.Request(
         url,
-        headers={"User-Agent": "github-profile-frontier-radar/1.0"},
+        headers={"User-Agent": "github-profile-frontier-radar/2.0"},
     )
     last_error: Exception | None = None
     for attempt in range(2):
         try:
-            with urllib.request.urlopen(request, timeout=18) as response:
+            with urllib.request.urlopen(request, timeout=35) as response:
                 root = ET.fromstring(response.read())
             break
         except urllib.error.HTTPError as exc:
-            if exc.code == 429:
-                raise RuntimeError("arXiv rate limited the request")
             last_error = exc
-            time.sleep(2 * (attempt + 1))
+            if exc.code == 429:
+                time.sleep(15 * (attempt + 1))
+            else:
+                time.sleep(3 * (attempt + 1))
         except (TimeoutError, urllib.error.URLError) as exc:
             last_error = exc
-            time.sleep(2 * (attempt + 1))
+            time.sleep(3 * (attempt + 1))
     else:
         raise RuntimeError(f"arXiv request failed after retries: {last_error}")
 
@@ -122,6 +240,7 @@ def fetch_arxiv(query: str, max_results: int = 8) -> list[dict[str, str]]:
         title_el = entry.find("atom:title", ATOM_NS)
         id_el = entry.find("atom:id", ATOM_NS)
         published_el = entry.find("atom:published", ATOM_NS)
+        summary_el = entry.find("atom:summary", ATOM_NS)
         if title_el is None or id_el is None or published_el is None:
             continue
         papers.append(
@@ -129,54 +248,61 @@ def fetch_arxiv(query: str, max_results: int = 8) -> list[dict[str, str]]:
                 "title": normalize(title_el.text or ""),
                 "url": normalize(id_el.text or ""),
                 "date": normalize((published_el.text or "")[:10]),
+                "summary": normalize(summary_el.text or "") if summary_el is not None else "",
             }
         )
     return papers
 
 
-def filter_papers(label: str, papers: list[dict[str, str]], limit: int = 3) -> list[dict[str, str]]:
-    needles = TITLE_FILTERS[label]
+def filter_papers(track: dict[str, object], papers: list[dict[str, str]], limit: int = 2) -> list[dict[str, str]]:
+    needles = tuple(str(needle).lower() for needle in track["needles"])
     kept: list[dict[str, str]] = []
     for paper in papers:
-        title = paper["title"].lower()
-        if any(needle in title for needle in needles):
+        text = f"{paper['title']} {paper.get('summary', '')}".lower()
+        if any(needle in text for needle in needles):
             kept.append(paper)
         if len(kept) == limit:
             break
     return kept
 
 
+def format_links(items: list[tuple[str, str]], limit: int | None = None) -> str:
+    selected = items[:limit] if limit is not None else items
+    return "<br>".join(f"[{md(title)}]({url})" for title, url in selected)
+
+
+def format_papers(track: dict[str, object], papers: list[dict[str, str]]) -> str:
+    if papers:
+        return "<br>".join(
+            f"[{md(paper['title'])}]({paper['url']}) ({paper['date']})"
+            for paper in papers
+        )
+    return format_links(track["fallback_papers"], limit=3)  # type: ignore[arg-type]
+
+
 def render_radar() -> str:
     today = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d")
     lines = [
-        f"_Updated on {today} UTC. Recent arXiv signals are filtered for LLM relevance; reference anchors fill gaps when a topic is rate-limited._",
+        f"_Updated on {today} UTC. Recent arXiv papers are filtered by track; implementation anchors keep the radar useful when a topic is quiet or rate-limited._",
         "",
-        "| Track | Signals |",
-        "| --- | --- |",
+        "| Track | Recent papers | Implementation anchors |",
+        "| --- | --- | --- |",
     ]
 
-    for label, query in TOPICS:
+    for track in TRACKS:
+        label = str(track["label"])
+        query = str(track["query"])
         try:
             papers = fetch_arxiv(query)
         except Exception as exc:
             print(f"warning: failed to fetch {label}: {exc}", file=sys.stderr)
             papers = []
-        time.sleep(1.2)
+        time.sleep(3.2)
 
-        papers = filter_papers(label, papers)
-
-        if papers:
-            items = [
-                f"[{paper['title']}]({paper['url']}) ({paper['date']})"
-                for paper in papers
-            ]
-            signals = "<br>".join(items)
-        else:
-            fallback_items = [
-                f"[{title}]({url})" for title, url in FALLBACK_SIGNALS.get(label, [])
-            ]
-            signals = "<br>".join(fallback_items)
-        lines.append(f"| {label} | {signals} |")
+        papers = filter_papers(track, papers)
+        recent = format_papers(track, papers)
+        anchors = format_links(track["anchors"], limit=4)  # type: ignore[arg-type]
+        lines.append(f"| {md(label)} | {recent} | {anchors} |")
 
     return "\n".join(lines)
 
