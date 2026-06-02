@@ -75,7 +75,7 @@ When I publish an experiment, I want it to include:
 <summary><strong>Frontier radar</strong> - auto-updated papers and implementation anchors</summary>
 
 <!-- FRONTIER-RADAR:START -->
-_Updated on 2026-06-01 UTC. Recent arXiv papers are filtered by track; implementation anchors keep the radar useful when a topic is quiet or rate-limited._
+_Updated on 2026-06-02 UTC. Recent arXiv papers are filtered by track; implementation anchors keep the radar useful when a topic is quiet or rate-limited._
 
 | Track | Recent papers | Implementation anchors |
 | --- | --- | --- |
